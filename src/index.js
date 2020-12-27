@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useFormik } from 'formik';
+import {
+  Formik, Form, Field, ErrorMessage,
+} from 'formik';
 import * as Yup from 'yup';
 import './styles.css';
 
@@ -10,57 +12,34 @@ const validationSchema = Yup.object({
   email: Yup.string().email('Invalid email address').required('Required'),
 });
 
-const SignupForm = () => {
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      firstName: '',
-      lastName: '',
-    },
-    validationSchema,
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
-    },
-  });
-  return (
-    <form onSubmit={formik.handleSubmit}>
+const SignupForm = () => (
+  <Formik
+    initialValues={{ firstName: '', lastName: '', email: '' }}
+    validationSchema={validationSchema}
+    onSubmit={(values, { setSubmitting }) => {
+      setTimeout(() => {
+        alert(JSON.stringify(values, null, 2));
+        setSubmitting(false);
+      }, 400);
+    }}
+  >
+    <Form>
       <label htmlFor="firstName">First Name</label>
-      <input
-        type="text"
-        id="firstName"
-        name="firstName"
-        {...formik.getFieldProps('firstName')}
-      />
-      {(formik.touched.firstName && formik.errors.firstName) ? (
-        <div>{formik.errors.firstName}</div>
-      ) : null}
+      <Field type="text" name="firstName" />
+      <ErrorMessage name="firstName" />
 
       <label htmlFor="lastName">Last Name</label>
-      <input
-        type="text"
-        id="lastName"
-        name="lastName"
-        {...formik.getFieldProps('lastName')}
-      />
-      {(formik.touched.lastName && formik.errors.lastName) ? (
-        <div>{formik.errors.lastName}</div>
-      ) : null}
+      <Field type="text" name="lastName" />
+      <ErrorMessage name="lastName" />
 
       <label htmlFor="email">Email Address</label>
-      <input
-        id="email"
-        name="email"
-        type="email"
-        {...formik.getFieldProps('email')}
-      />
-      {(formik.touched.email && formik.errors.email) ? (
-        <div>{formik.errors.email}</div>
-      ) : null}
+      <Field type="email" name="email" />
+      <ErrorMessage name="email" />
 
       <button type="submit">Submit</button>
-    </form>
-  );
-};
+    </Form>
+  </Formik>
+);
 
 function App() {
   return <SignupForm />;
