@@ -1,17 +1,67 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { useFormik } from "formik";
-import "./styles.css";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useFormik } from 'formik';
+import './styles.css';
+
+const validate = (values) => {
+  const errors = {};
+  if (!values.firstName) {
+    errors.firstName = 'Required';
+  } else if (values.firstName.length > 15) {
+    errors.firstName = 'Must be 15 characters or less';
+  }
+
+  if (!values.lastName) {
+    errors.lastName = 'Required';
+  } else if (values.lastName.length > 20) {
+    errors.lastName = 'Must be 20 characters or less';
+  }
+
+  const emailRefex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+
+  if (!values.email) {
+    errors.email = 'Required';
+  } else if (!emailRefex.test(values.email)) {
+    errors.email = 'Invalid email address';
+  }
+
+  return errors;
+};
 
 const SignupForm = () => {
   const formik = useFormik({
-    initialValues: { email: "" },
-    onSubmit: values => {
+    initialValues: {
+      email: '',
+      firstName: '',
+      lastName: '',
+    },
+    validate,
+    onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2));
-    }
+    },
   });
   return (
     <form onSubmit={formik.handleSubmit}>
+      <label htmlFor="firstName">First Name</label>
+      <input
+        type="text"
+        id="firstName"
+        name="firstName"
+        onChange={formik.handleChange}
+        value={formik.values.firstName}
+      />
+      {formik.errors.firstName ? <div>{formik.errors.firstName}</div> : null}
+
+      <label htmlFor="lastName">Last Name</label>
+      <input
+        type="text"
+        id="lastName"
+        name="lastName"
+        onChange={formik.handleChange}
+        value={formik.values.lastName}
+      />
+      {formik.errors.lastName ? <div>{formik.errors.lastName}</div> : null}
+
       <label htmlFor="email">Email Address</label>
       <input
         id="email"
@@ -20,6 +70,8 @@ const SignupForm = () => {
         onChange={formik.handleChange}
         value={formik.values.email}
       />
+      {formik.errors.email ? <div>{formik.errors.email}</div> : null}
+
       <button type="submit">Submit</button>
     </form>
   );
@@ -29,5 +81,5 @@ function App() {
   return <SignupForm />;
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 ReactDOM.render(<App />, rootElement);
